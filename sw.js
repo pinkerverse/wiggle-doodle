@@ -1,4 +1,4 @@
-const CACHE='wiggle-doodle-v2-live-2';
+const CACHE='wiggle-doodle-v2-live-3';
 const ASSETS=['./','./index.html','./manifest.webmanifest','./icons/icon.svg'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(Promise.all([
