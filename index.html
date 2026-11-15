@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#faf7f3" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Wiggle Doodle" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="./icons/icon.svg" />
+  <link rel="apple-touch-icon" href="./icons/icon.svg" />
+  <meta name="description" content="Draw lively little doodles with five delightful brushes. Seven gentle animated brushes and Instagram-ready MP4 export." />
+
+
+
+  <style>
+:root { font-family: ui-rounded, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #292524; background: #faf7f3; font-synthesis: none; }
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; overscroll-behavior: none; }
+button, input, select { font: inherit; }
+button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+button:disabled { opacity: .35; cursor: not-allowed; }
+.app { min-height: 100dvh; display: flex; flex-direction: column; }
+.topbar { min-height: 76px; padding: 12px clamp(16px,3vw,35px); padding-top: max(12px,env(safe-area-inset-top)); display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid #e8e2dc; background: rgba(255,255,255,.65); }
+.brand { display: flex; align-items: center; white-space: nowrap; gap: 4px; font-size: 23px; font-weight: 900; letter-spacing: -1.5px; }
+.brand-accent { color: #f56524; }
+.brand-symbol { background: #ffede1; color: #fb6b27; border-radius: 12px; width: 39px; height: 39px; display: grid; place-items: center; font-size: 31px; line-height: 1; margin-right: 7px; transform: rotate(-20deg); }
+.beta { font-size: 10px; color: #bb8d67; background: #f5eadd; padding: 3px 6px; border-radius: 6px; letter-spacing: 0; margin-left: 5px; }
+.top-actions { display: flex; gap: 8px; align-items: center; }
+.icon-btn, .primary-btn, .outline-btn { border-radius: 12px; border: 1px solid #e5dfd8; background: #fff; color: #5e5651; padding: 11px 13px; font-size: 13px; font-weight: 700; min-height: 42px; }
+.icon-btn { font-size: 20px; line-height: 1; }
+.icon-btn .btn-word { font-size: 12px; vertical-align: 2px; }
+.primary-btn { background: #ff682a; color: white; border-color: #ff682a; }
+.primary-btn:hover { background: #ed5617; }
+.workspace { flex: 1; display: grid; grid-template-columns: minmax(245px,286px) minmax(0,1fr); min-height: 0; }
+.tools-panel { border-right: 1px solid #ece4dd; background: #fff; padding: 20px 19px 32px; overflow-y: auto; }
+.panel-section { padding: 9px 0 21px; border-bottom: 1px solid #f0ebe6; margin-bottom: 10px; }
+.panel-section:last-child { border-bottom: 0; }
+h2 { font-size: 14px; margin: 2px 0 14px; font-weight: 800; letter-spacing: -.2px; }
+.hint { font-weight: 500; color: #a49a94; font-size: 11px; margin-left: 4px; }
+.brush-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 9px; }
+.brush { border-radius: 13px; background: #fbf9f7; border: 1.5px solid #e9e3dd; min-height: 83px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 2px; font-size: 11px; font-weight: 650; color: #7a6f68; }
+.brush.active { border-color: #ff793c; background: #fff3e9; box-shadow: 0 0 0 2px rgba(255,115,48,.07); color: #a04d20; }
+.brush-preview { font-size: 35px; font-weight: 800; line-height: 1.2; color: #302a27; }
+.wiggle-preview { color: #f56829; }.squiggle-preview { color:#4c80dd; }.rainbow-preview { background: linear-gradient(90deg,#f45c43,#ecc351,#58b689,#568aef,#bb64c7); -webkit-background-clip: text; background-clip:text; color: transparent; }.sparkle-preview { color: #dfb04c; }
+.colors { display: flex; flex-wrap: wrap; gap: 9px; align-items: center; }
+.color-chip, .custom-color { width: 29px; height: 29px; border-radius: 50%; background: var(--chip); border: 2px solid #fff; box-shadow: 0 0 0 1px #ebe3da; padding: 0; }
+.color-chip.selected { box-shadow: 0 0 0 2px #ff722c; }
+.custom-color { background: #fff; display: grid; place-items: center; position: relative; font-size: 21px; color: #84746b; overflow:hidden; }
+.custom-color input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; cursor: pointer; }
+.section-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }.section-head h2 { margin-bottom: 9px; }.section-head output { color: #ec6a34; font-weight: 800; font-size: 14px; }
+input[type=range] { width: 100%; accent-color: #ff692a; cursor: pointer; }.size-labels { display: flex; justify-content: space-between; font-size: 10px; color: #a69a92; }
+.helper { font-size: 11px; line-height: 1.5; color: #a29992; margin: 4px 0 0; }
+.toggle { cursor: pointer; display: inline-flex; position: relative; }.toggle input { position: absolute; opacity: 0; }.switch { width: 42px; height: 24px; border-radius: 20px; background: #dfd7d1; transition:background .2s; }.switch::after { content:''; display:block; width:18px; height:18px; background:#fff; border-radius:50%; margin:3px; transition:transform .2s; box-shadow:0 1px 2px #0002; }.toggle input:checked + .switch { background:#ff712e; }.toggle input:checked + .switch::after { transform:translateX(18px); }
+select { width:100%; padding: 11px; border:1px solid #e8ddd5; color:#403833; background:#faf7f3; border-radius: 10px; font-size: 12px; }
+.outline-btn { width: 100%; margin-top: 11px; color: #f06b2c; border-color: #f7c6ad; background: #fffaf6; }.outline-btn:hover { background: #fff1e8; }
+.stage { min-width:0; display:flex; flex-direction:column; background: #faf7f3; padding: 18px clamp(16px,3vw,37px) 16px; }
+.stage-header, .stage-footer { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap: wrap; font-size: 12px; color:#a4978d; }
+.stage-label { font-weight: 750; color:#675a51; }.live-dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:#f48652; margin-right:8px; }.stage-footer { padding:11px 3px; font-size:11px; }.orange-spark { color:#ff722f; }.stage-status { font-size:11px; }
+.artboard-wrap { flex:1; display:flex; align-items:center; justify-content:center; min-height: 0; padding:18px 0 8px; }
+.artboard { position:relative; width:min(100%, 620px); aspect-ratio:1; max-height:calc(100dvh - 208px); background:#fff; border-radius:9px; box-shadow: 0 9px 34px #51402e14,0 2px 7px #51402e09; overflow:hidden; }
+.artboard[data-format="portrait"] { aspect-ratio:9 / 16; width:min(100%,calc((100dvh - 208px)*9/16)); }
+.artboard[data-format="landscape"] { aspect-ratio:16 / 9; width:min(100%, 900px); }
+#drawing { width:100%; height:100%; display:block; touch-action:none; cursor:crosshair; }
+.empty-hint { pointer-events:none; position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:19px; font-weight:780; color:#e1d7ce; text-align:center; }.empty-hint small { font-size:11px; font-weight:500; margin-top:8px; }.hint-swoosh { font-size:70px; color:#ffb791; line-height:1.3; transform:rotate(-18deg); }
+.toast { opacity:0; pointer-events:none; position:fixed; left:50%; bottom:max(25px,env(safe-area-inset-bottom)); transform:translateX(-50%) translateY(8px); background:#292521; color:#fff; border-radius:14px; padding:12px 17px; font-size:13px; box-shadow: 0 6px 20px #0002; transition:opacity .2s,transform .2s; z-index:3; max-width:calc(100vw - 30px); text-align:center; }.toast.visible { opacity:1; transform:translateX(-50%) translateY(0); }
+@media(max-width:750px){.topbar{min-height:61px}.brand{font-size:18px}.brand-symbol{width:30px;height:30px;font-size:24px}.beta{display:none}.btn-word{display:none}.workspace{display:flex;flex-direction:column-reverse}.stage{min-height: min(72dvh,650px);padding:12px 13px 5px}.artboard{max-height: min(64dvh,510px)}.artboard[data-format="portrait"]{width:min(100%,calc(min(64dvh,510px)*9/16))}.tools-panel{border-right:0;border-top:1px solid #ece4dd;padding:12px 16px 24px;display:grid;grid-template-columns:1fr 1fr;gap:12px 22px;overflow:visible}.panel-section{margin:0;padding:6px 0 14px}.brush-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}.brush{min-height:65px;font-size:10px}.brush-preview{font-size:25px}.tools-panel .panel-section:first-child{grid-column:1 / -1}.stage-header{font-size:11px}.top-actions{gap:5px}.icon-btn,.primary-btn{padding:8px 10px}.stage-footer{padding:7px}.output-section{grid-column:1 / -1}}
+@media(max-width:390px){.brand{font-size:15px}.topbar{padding-inline:9px}.top-actions{gap:3px}.primary-btn span{font-size:11px}.tools-panel{grid-template-columns:1fr 1fr;gap:7px 14px}.brush{font-size:9px}}
+
+.empty-hint[hidden] { display: none; }
+
+/* v2 refinements */
+.brush-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+.kawaii-preview { color:#e383a2; text-shadow:1px 1px 1px #e383a250; }
+.bleed-preview { color:#e78a75; text-shadow: -2px 0 3px #e78a7580, 2px 0 4px #e78a7550; }
+.motion-heading { margin-top:17px; font-size:12px; color:#675a51; font-weight:700; }
+.motion-heading label { font-size:12px; }
+.motion-heading output {font-size:12px;}
+.export-label {display:block;font-size:11px;font-weight:700;color:#806f64;margin:13px 0 7px;}
+.output-section select { margin-top:0; }
+.progress { margin-top:12px; height:7px; border-radius:9px; background:#f8ebe0; overflow:hidden; }
+.progress[hidden] { display:none; }
+#progressFill { height:100%; background:#f36e33; width:0%; transition:width .15s; }
+.demo-btn {margin-top:15px;background:#fff6ed;border:1px solid #f7ceb2;border-radius:12px;color:#dc794e;padding:9px 12px;font-size:12px;font-weight:750;cursor:pointer;pointer-events:all;}
+.empty-hint[hidden] {display:none;}
+.export-overlay {position:fixed;inset:0;z-index:8;display:grid;place-items:center;background:rgba(35,23,19,.65);padding:15px;}
+.export-overlay[hidden]{display:none;}
+.export-card {position:relative;background:#fff;border-radius:22px;padding:22px;width:min(100%,430px);max-height:96dvh;overflow-y:auto;box-shadow:0 24px 75px #0003;}
+.export-card h2{font-size:20px;margin:0 35px 8px 0;}
+.dialog-close{position:absolute;right:16px;top:16px;border:none;background:#f8f2ef;border-radius:50%;width:34px;height:34px;cursor:pointer;}
+.export-card video{display:block;max-width:100%;height:min(53dvh,450px);aspect-ratio:9/16;background:#eee;border-radius:12px;margin:16px auto;}
+.export-actions {display:flex;gap:9px;}
+.export-actions button {flex:1;min-width:0;}
+.export-actions .outline-btn {margin-top:0;}
+@media(max-width:750px) {
+ .brush-grid {grid-template-columns:repeat(4,minmax(0,1fr));}
+ .brush{min-height:68px;font-size:10px;}
+ .stage{min-height:min(75dvh,720px);}
+ .artboard {max-height:min(65dvh,530px);}
+ .artboard[data-format="portrait"] {width:min(100%,calc(min(65dvh,530px)*9/16));}
+ .tools-panel {padding-bottom:max(25px,env(safe-area-inset-bottom));}
+}
+@media(max-width:440px) {
+ .brush-grid{grid-template-columns:repeat(4,minmax(0,1fr));}
+ .brush-preview{font-size:23px;}
+ .brand{font-size:17px;}
+}
+
+  </style>
+  <title>Wiggle Doodle</title>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand"><span class="brand-symbol" aria-hidden="true">〰</span><span>wiggle<span class="brand-accent">doodle</span></span><span class="beta">v2</span></div>
+      <div class="top-actions">
+        <button id="undo" title="Undo" aria-label="Undo" class="icon-btn" disabled>↶ <span class="btn-word">Undo</span></button>
+        <button id="redo" title="Redo" aria-label="Redo" class="icon-btn" disabled>↷ <span class="btn-word">Redo</span></button>
+        <button id="clear" title="Clear canvas" class="icon-btn">✕ <span class="btn-word">Clear</span></button>
+        <button id="save" class="primary-btn" title="Save still image">↓ <span>Save PNG</span></button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="tools-panel" aria-label="Drawing tools">
+        <div class="panel-section">
+          <h2>Brushes <span class="hint">pick a vibe</span></h2>
+          <div class="brush-grid" id="brushes">
+            <button class="brush" data-brush="ink" aria-pressed="false"><span class="brush-preview ink-preview">〰</span><span>Ink</span></button>
+            <button class="brush active" data-brush="wiggle" aria-pressed="true"><span class="brush-preview wiggle-preview">∿</span><span>Wiggle</span></button>
+            <button class="brush" data-brush="squiggle" aria-pressed="false"><span class="brush-preview squiggle-preview">≋</span><span>Squiggle</span></button>
+            <button class="brush" data-brush="rainbow" aria-pressed="false"><span class="brush-preview rainbow-preview">〰</span><span>Rainbow</span></button>
+            <button class="brush" data-brush="sparkle" aria-pressed="false"><span class="brush-preview sparkle-preview">✧</span><span>Sparkle</span></button>
+            <button class="brush" data-brush="kawaii" aria-pressed="false"><span class="brush-preview kawaii-preview">⌣</span><span>Kawaii</span></button>
+            <button class="brush" data-brush="bleed" aria-pressed="false"><span class="brush-preview bleed-preview">〰</span><span>Soft bleed</span></button>
+          </div>
+        </div>
+        <div class="panel-section">
+          <h2>Color</h2>
+          <div class="colors" id="colors" aria-label="Choose color">
+            <button class="color-chip selected" style="--chip:#202027" data-color="#202027" aria-label="Charcoal" aria-pressed="true"></button>
+            <button class="color-chip" style="--chip:#ff651c" data-color="#ff651c" aria-label="Orange" aria-pressed="false"></button>
+            <button class="color-chip" style="--chip:#e25385" data-color="#e25385" aria-label="Pink" aria-pressed="false"></button>
+            <button class="color-chip" style="--chip:#9061d0" data-color="#9061d0" aria-label="Purple" aria-pressed="false"></button>
+            <button class="color-chip" style="--chip:#427de6" data-color="#427de6" aria-label="Blue" aria-pressed="false"></button>
+            <button class="color-chip" style="--chip:#329f78" data-color="#329f78" aria-label="Green" aria-pressed="false"></button>
+            <label class="custom-color" title="Custom color" aria-label="Custom color">＋<input type="color" id="customColor" value="#ff651c" /></label>
+          </div>
+        </div>
+        <div class="panel-section">
+          <div class="section-head"><h2>Brush size</h2><output id="sizeValue">8</output></div>
+          <input type="range" id="size" min="2" max="28" step="1" value="8" aria-label="Brush size" />
+          <div class="size-labels"><span>Thin</span><span>Chunky</span></div>
+        </div>
+        <div class="panel-section">
+          <div class="section-head"><h2>Keep it moving</h2><label class="toggle"><input type="checkbox" id="motion" checked /><span class="switch"></span></label></div>
+          <p class="helper">Lines stay steady while you draw; they only come alive when you lift your Pencil.</p>
+          <div class="section-head motion-heading"><label for="intensity">Wiggle strength</label><output id="intensityValue">Gentle · 18%</output></div>
+          <input id="intensity" type="range" min="0" max="100" step="1" value="18" aria-label="Wiggle strength" />
+          <div class="size-labels"><span>Still</span><span>More lively</span></div>
+        </div>
+        <div class="panel-section output-section">
+          <h2>Canvas format</h2>
+          <select id="format" aria-label="Canvas format">
+            <option value="portrait" selected>Portrait · 9:16 Reel</option>
+            <option value="square">Square · 1:1</option>
+            <option value="landscape">Landscape · 16:9</option>
+          </select>
+          <label class="export-label" for="quality">Video resolution</label>
+          <select id="quality" aria-label="Export quality">
+            <option value="1080" selected>Full HD · 1080 × 1920</option>
+            <option value="720">Fast · 720 × 1280</option>
+          </select>
+          <button id="record" class="outline-btn" title="Export seamless looping MP4">▶ Export Instagram MP4 · 4s loop</button>
+          <div id="exportProgress" class="progress" hidden><div id="progressFill"></div></div>
+          <p id="exportHelp" class="helper">Seamless 4-second loop · 30 fps · H.264 MP4 · no GIF. On supported browsers it exports directly on your device.</p>
+        </div>
+      </section>
+
+      <section class="stage" aria-label="Doodle canvas">
+        <div class="stage-header"><div class="stage-label"><span class="live-dot"></span> Your little masterpiece</div><div class="stage-status" id="status">Ready for your first doodle ✦</div></div>
+        <div class="artboard-wrap" id="artboardWrap">
+          <div class="artboard" id="artboard" data-format="square">
+            <canvas id="drawing" aria-label="Draw here using your finger, mouse, or Apple Pencil"></canvas>
+            <div class="empty-hint" id="emptyHint" aria-hidden="true"><div class="hint-swoosh">〰</div>Draw a tiny happy thought!<small>Apple Pencil · finger · mouse</small><button id="demo" class="demo-btn" type="button">Try a sample doodle ✦</button></div>
+          </div>
+        </div>
+        <div class="stage-footer"><span><span class="orange-spark">✦</span> Your art stays on your device.</span><span id="count">0 strokes</span></div>
+      </section>
+    </main>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <div id="exportDialog" class="export-overlay" hidden role="dialog" aria-modal="true" aria-label="Your Instagram video">
+      <div class="export-card">
+        <button class="dialog-close" id="closeExport" aria-label="Close video preview">✕</button>
+        <h2>Your tiny loop is ready ✨</h2>
+        <p class="helper">Four seconds, 30 fps, seamless repeat — ready for a Reel.</p>
+        <video id="videoPreview" controls autoplay muted playsinline loop></video>
+        <div class="export-actions"><button id="shareVideo" class="primary-btn">Share / Save MP4</button><button id="downloadVideo" class="outline-btn">Download MP4 ↓</button></div>
+        <p class="helper">On iPad, tap Share / Save MP4 to choose Save Video or Save to Files if available.</p>
+      </div>
+    </div>
+  </div>
+  <script>
+/* Tiny, self-contained ISO BMFF muxer for browser VideoEncoder's AVC output.
+   Supports a single H.264 AVCC video track, constant 30 fps, no audio.
+   This intentionally does not depend on a CDN so the PWA works offline. */
+(function (root) {
+  'use strict';
+  const encoder = new TextEncoder();
+  const u8 = (...n) => Uint8Array.from(n.map(x => x & 255));
+  const u16 = n => u8(n>>>8,n);
+  const u32 = n => u8(n>>>24,n>>>16,n>>>8,n);
+  const string = s => encoder.encode(s);
+  function join(...arrays) {
+    const parts=arrays.flat().map(a => a instanceof Uint8Array ? a : new Uint8Array(a));
+    const out=new Uint8Array(parts.reduce((sum,p)=>sum+p.byteLength,0));
+    let position=0;
+    for(const p of parts) {out.set(p,position);position+=p.byteLength;}
+    return out;
+  }
+  const zeros = n => new Uint8Array(n);
+  function box(type,...parts) { const content=join(...parts);return join(u32(content.byteLength+8),string(type),content); }
+  function fullBox(type,version,flags,...parts) {return box(type,u8(version,(flags>>>16)&255,(flags>>>8)&255,flags&255),...parts);}
+  const matrix = () => join(u32(65536),u32(0),u32(0),u32(0),u32(65536),u32(0),u32(0),u32(0),u32(1073741824));
+  function muxAVC(samples,avcc,width,height,fps=30) {
+    if(!samples.length || !avcc || avcc.byteLength<7) throw new Error('H.264 decoder metadata missing.');
+    const scale=90000, delta=scale/fps, duration=delta*samples.length;
+    if(!Number.isInteger(delta)) throw new Error('FPS must evenly divide 90000.');
+    const bytes = samples.map(s=>s.data);
+    const keyframes = samples.flatMap((s,i)=>s.key?[i+1]:[]);
+    if(!keyframes.length) throw new Error('No H.264 keyframe found.');
+    const ftyp=box('ftyp',string('isom'),u32(512),string('isom'),string('iso2'),string('avc1'),string('mp41'));
+    const avc1=box('avc1',zeros(6),u16(1),zeros(16),u16(width),u16(height),
+      u32(0x00480000),u32(0x00480000),u32(0),u16(1),zeros(32),u16(24),u16(65535),box('avcC',avcc));
+    const stsd=fullBox('stsd',0,0,u32(1),avc1);
+    const stts=fullBox('stts',0,0,u32(1),u32(samples.length),u32(delta));
+    const stsc=fullBox('stsc',0,0,u32(1),u32(1),u32(samples.length),u32(1));
+    const stsz=fullBox('stsz',0,0,u32(0),u32(samples.length),...bytes.map(b=>u32(b.byteLength)));
+    const stss=fullBox('stss',0,0,u32(keyframes.length),...keyframes.map(u32));
+    function moov(offset) {
+      const stco=fullBox('stco',0,0,u32(1),u32(offset));
+      const stbl=box('stbl',stsd,stts,stsc,stsz,stco,stss);
+      const url=fullBox('url ',0,1);
+      const dref=fullBox('dref',0,0,u32(1),url);
+      const dinf=box('dinf',dref);
+      const vmhd=fullBox('vmhd',0,1,u16(0),u16(0),u16(0),u16(0));
+      const minf=box('minf',vmhd,dinf,stbl);
+      const mdhd=fullBox('mdhd',0,0,u32(0),u32(0),u32(scale),u32(duration),u16(0x55c4),u16(0));
+      const hdlr=fullBox('hdlr',0,0,u32(0),string('vide'),zeros(12),string('VideoHandler\0'));
+      const mdia=box('mdia',mdhd,hdlr,minf);
+      const tkhd=fullBox('tkhd',0,7,u32(0),u32(0),u32(1),u32(0),u32(duration),zeros(8),
+        u16(0),u16(0),u16(0),u16(0),matrix(),u32(width*65536),u32(height*65536));
+      const trak=box('trak',tkhd,mdia);
+      const mvhd=fullBox('mvhd',0,0,u32(0),u32(0),u32(scale),u32(duration),u32(65536),u16(256),
+        u16(0),zeros(8),matrix(),zeros(24),u32(2));
+      return box('moov',mvhd,trak);
+    }
+    const provisional=moov(0);
+    const metadata=moov(ftyp.byteLength+provisional.byteLength+8);
+    const mdat=box('mdat',...bytes);
+    return new Blob([ftyp,metadata,mdat],{type:'video/mp4'});
+  }
+  root.WiggleMp4={muxAVC};
+})(window);
+
+  </script>
+  <script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const canvas = $('drawing');
+  const context = canvas.getContext('2d', {alpha:false});
+  const board=$('artboard'),hint=$('emptyHint');
+  const brushButtons=[...document.querySelectorAll('.brush')];
+  const colorButtons=[...document.querySelectorAll('.color-chip')];
+  const formats={portrait:[9,16],square:[1,1],landscape:[16,9]};
+  const knownBrushes=new Set(['ink','wiggle','squiggle','rainbow','sparkle','kawaii','bleed']);
+  const LOOP=4, FPS=30, TWO_PI=Math.PI*2;
+  const key='wiggle-doodle-drawing-v2';
+  const oldKey='wiggle-doodle-drawing-v1';
+  const state={strokes:[],redo:[],brush:'wiggle',color:'#202027',size:8,motion:true,intensity:18,format:'portrait'};
+  let activePointer=null,currentStroke=null,autosaveId=null,toastTimer=null;
+  let exporting=false,exportedBlob=null,exportedUrl=null;
+  let t0=performance.now();
+
+  function showToast(msg) {
+    $('toast').textContent=msg; $('toast').classList.add('visible');
+    clearTimeout(toastTimer);
+    toastTimer=setTimeout(()=>$('toast').classList.remove('visible'),4600);
+  }
+  function normalizeStroke(s) {
+    if(!s || !knownBrushes.has(s.brush) || !/^#[0-9a-f]{6}$/i.test(s.color) || !Number.isFinite(s.size) ||
+       !Array.isArray(s.points) || !s.points.length || s.points.length>9000 ||
+       !s.points.every(p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=0&&p.x<=1&&p.y>=0&&p.y<=1)) return null;
+    return {brush:s.brush,color:s.color,size:Math.max(1,Math.min(40,s.size)),points:s.points,seed:Number.isFinite(s.seed)?s.seed:1.32};
+  }
+  function restore() {
+    try {
+      const fromOld=!localStorage.getItem(key);
+      const saved=JSON.parse(localStorage.getItem(fromOld?oldKey:key)||'null');
+      if(!saved || !Array.isArray(saved.strokes)) return;
+      state.strokes=saved.strokes.slice(-400).map(normalizeStroke).filter(Boolean);
+      if(formats[saved.format])state.format=saved.format;
+      if(typeof saved.motion==='boolean')state.motion=saved.motion;
+      if(Number.isFinite(saved.intensity))state.intensity=Math.max(0,Math.min(100,saved.intensity));
+      if(fromOld && state.strokes.length) showToast('Your original drawing is here ✦');
+    }catch(err){console.warn('Restore failed',err);}
+  }
+  function persist() {
+    clearTimeout(autosaveId);
+    autosaveId=setTimeout(()=>{
+      try {localStorage.setItem(key,JSON.stringify({strokes:state.strokes,format:state.format,motion:state.motion,intensity:state.intensity}));}
+      catch(error){if(error.name!=='SecurityError')showToast('Local storage is full. Save a PNG backup.');}
+    },250);
+  }
+  function updateStatus() {
+    hint.hidden=!!currentStroke || state.strokes.length>0;
+    $('undo').disabled=exporting||!state.strokes.length;
+    $('redo').disabled=exporting||!state.redo.length;
+    $('count').textContent=`${state.strokes.length} ${state.strokes.length===1?'stroke':'strokes'}`;
+    $('status').textContent=exporting?'Making your MP4 ✨':(state.strokes.length?'A little motion, a lot of cute ✦':'Ready for your first doodle ✦');
+  }
+  function applyFormat() {
+    board.dataset.format=state.format;
+    $('format').value=state.format;
+    resize();
+  }
+  function resize() {
+    const b=canvas.getBoundingClientRect();
+    if(!b.width || !b.height) return;
+    const dpr=Math.min(2,devicePixelRatio||1), w=Math.max(1,Math.round(b.width*dpr)), h=Math.max(1,Math.round(b.height*dpr));
+    if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
+    paint(context,w,h,cycleTime(),state.strokes,state.motion);
+  }
+  function cycleTime(){return ((performance.now()-t0)/1000)%LOOP;}
+  function addPoint(e) {
+    if(!currentStroke)return;
+    const b=canvas.getBoundingClientRect();
+    const x=Math.max(0,Math.min(1,(e.clientX-b.left)/b.width)), y=Math.max(0,Math.min(1,(e.clientY-b.top)/b.height));
+    const pts=currentStroke.points,last=pts[pts.length-1];
+    // A real path is stored even when the animation is off.
+    if(last && Math.hypot((x-last.x)*b.width,(y-last.y)*b.height)<.6)return;
+    pts.push({x,y});
+    if(pts.length>7000)pts.splice(1,1);
+  }
+  canvas.addEventListener('pointerdown',e=>{
+    if(exporting||activePointer!==null||(e.pointerType==='mouse'&&e.button!==0))return;
+    e.preventDefault();activePointer=e.pointerId;canvas.setPointerCapture(e.pointerId);
+    currentStroke={brush:state.brush,color:state.color,size:state.size,seed:Math.random()*TWO_PI,points:[]};
+    addPoint(e);updateStatus();
+  });
+  canvas.addEventListener('pointermove',e=>{
+    if(activePointer!==e.pointerId||!currentStroke)return;
+    e.preventDefault();
+    const events=typeof e.getCoalescedEvents==='function'?e.getCoalescedEvents():[];
+    if(events.length)events.forEach(addPoint);else addPoint(e);
+  });
+  function endStroke(e) {
+    if(e.pointerId!==activePointer)return;
+    if(e.type==='pointerup')addPoint(e);
+    if(currentStroke && currentStroke.points.length){
+      state.strokes.push(currentStroke);
+      if(state.strokes.length>400)state.strokes.shift();
+      state.redo=[];persist();
+    }
+    currentStroke=null;activePointer=null;updateStatus();
+  }
+  canvas.addEventListener('pointerup',endStroke);
+  canvas.addEventListener('pointercancel',endStroke);
+  canvas.addEventListener('lostpointercapture',endStroke);
+
+  // All frequencies are integral multiples of one four-second period:
+  // the animation at t=4.0 is identical to t=0.0, enabling a clean loop.
+  // Motion displaces points along their local normal, by <~20% of a line width
+  // at the gentle default. The raw path never moves under a drawing Pencil.
+  function pointsFor(s,w,h,t,animated,intensity) {
+    const original=s.points,pts=new Array(original.length);
+    if(!animated||s.brush==='ink'||intensity===0){
+      for(let i=0;i<original.length;i++)pts[i]={x:original[i].x*w,y:original[i].y*h};
+      return pts;
+    }
+    const phase=TWO_PI*(t/LOOP);
+    const width=Math.max(.5,s.size*w/600);
+    const levels={wiggle:.19,squiggle:.28,rainbow:.10,sparkle:.075,kawaii:.11,bleed:.105};
+    const maxAmplitude=Math.min(width*.6,Math.max(.10,(levels[s.brush]||.12)*width*(intensity/18)));
+    let accumulated=0;
+    for(let i=0;i<original.length;i++) {
+      const p=original[i],prev=original[Math.max(0,i-1)],next=original[Math.min(original.length-1,i+1)];
+      const x=p.x*w,y=p.y*h;
+      if(i>0)accumulated+=Math.hypot((p.x-original[i-1].x)*w,(p.y-original[i-1].y)*h);
+      const dx=(next.x-prev.x)*w,dy=(next.y-prev.y)*h;
+      const inv=1/(Math.hypot(dx,dy)||1);
+      const seed=s.seed||1.32;
+      const wave=.72*Math.sin(phase+accumulated*.052+seed)+.28*Math.sin(phase*2-accumulated*.025+seed*.73);
+      const disp=maxAmplitude*wave;
+      pts[i]={x:x-dy*inv*disp,y:y+dx*inv*disp};
+    }
+    return pts;
+  }
+  function trace(ctx,pts) {
+    ctx.beginPath();
+    if(pts.length===1){ctx.arc(pts[0].x,pts[0].y,.1,0,TWO_PI);return;}
+    ctx.moveTo(pts[0].x,pts[0].y);
+    for(let i=1;i<pts.length-1;i++)ctx.quadraticCurveTo(pts[i].x,pts[i].y,(pts[i].x+pts[i+1].x)/2,(pts[i].y+pts[i+1].y)/2);
+    ctx.lineTo(pts[pts.length-1].x,pts[pts.length-1].y);
+  }
+  function star(ctx,x,y,r,color) {
+    ctx.beginPath();ctx.moveTo(x,y-r);
+    ctx.quadraticCurveTo(x+r*.15,y-r*.15,x+r,y);
+    ctx.quadraticCurveTo(x+r*.15,y+r*.15,x,y+r);
+    ctx.quadraticCurveTo(x-r*.15,y+r*.15,x-r,y);
+    ctx.quadraticCurveTo(x-r*.15,y-r*.15,x,y-r);
+    ctx.fillStyle=color;ctx.fill();
+  }
+  function strokeLine(ctx,pts,thickness,color,alpha) {
+    ctx.globalAlpha=alpha;ctx.lineWidth=thickness;
+    ctx.strokeStyle=color;ctx.fillStyle=color;
+    trace(ctx,pts);
+    if(pts.length===1){ctx.beginPath();ctx.arc(pts[0].x,pts[0].y,Math.max(0.6,thickness/2),0,TWO_PI);ctx.fill();}
+    else ctx.stroke();
+  }
+  function drawStroke(ctx,s,w,h,t,animated,intensity) {
+    if(!s||!s.points.length)return;
+    const pts=pointsFor(s,w,h,t,animated,intensity);
+    const thickness=Math.max(.6,s.size*w/600);
+    ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+    if(s.brush==='kawaii') {
+      // Barely feathered marker edge: pastel softness, crisp readable center.
+      strokeLine(ctx,pts,thickness*1.31,s.color,.11);
+      strokeLine(ctx,pts,thickness*1.13,s.color,.23);
+      strokeLine(ctx,pts,thickness,s.color,.96);
+    } else if(s.brush==='bleed') {
+      // Side-bleed look: diffused wider edges, without moving the line too much.
+      ctx.shadowColor=s.color;ctx.shadowBlur=thickness*.60;
+      strokeLine(ctx,pts,thickness*1.85,s.color,.09);
+      ctx.shadowBlur=0;
+      strokeLine(ctx,pts,thickness*1.38,s.color,.17);
+      strokeLine(ctx,pts,thickness*.92,s.color,.94);
+    } else if(s.brush==='rainbow') {
+      const gradient=ctx.createLinearGradient(0,0,w,h*.3);
+      for(let i=0;i<=8;i++)gradient.addColorStop(i/8,`hsl(${(i*48+(animated?t/LOOP*360:0))%360} 80% 63%)`);
+      strokeLine(ctx,pts,thickness,gradient,1);
+    } else if(s.brush==='sparkle') {
+      strokeLine(ctx,pts,thickness*.75,s.color,1);
+      const spacing=Math.max(3,Math.floor(pts.length/24));
+      for(let i=0;i<pts.length;i+=spacing) {
+        const p=pts[i],phase=i*.71+ (animated?TWO_PI*t/LOOP:0);
+        const r=thickness*(.34+.27*(.5+.5*Math.sin(phase)));
+        const offset=thickness*1.04;
+        star(ctx,p.x+Math.cos(i*2.21)*offset,p.y+Math.sin(i*2.21)*offset,r,s.color);
+      }
+    } else strokeLine(ctx,pts,thickness,s.color,1);
+    ctx.restore();
+  }
+  function paint(ctx,w,h,t,strokes,animated) {
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
+    for(const s of strokes)drawStroke(ctx,s,w,h,t,animated,state.intensity);
+    // Always render a stable line directly beneath the Pencil.
+    if(ctx===context&&currentStroke)drawStroke(ctx,currentStroke,w,h,0,false,0);
+  }
+  function animate() {
+    if(!document.hidden)paint(context,canvas.width,canvas.height,cycleTime(),state.strokes,state.motion);
+    requestAnimationFrame(animate);
+  }
+  function downloadBlob(blob,name) {
+    const url=URL.createObjectURL(blob),anchor=document.createElement('a');
+    anchor.href=url;anchor.download=name;document.body.appendChild(anchor);anchor.click();anchor.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),60000);
+  }
+  function outputDimensions(quality=1080) {
+    const factor=quality/1080;
+    const dims=state.format==='portrait'?[1080,1920]:state.format==='landscape'?[1920,1080]:[1080,1080];
+    return dims.map(n=>Math.round(n*factor/2)*2);
+  }
+  $('save').addEventListener('click',()=>{
+    if(!state.strokes.length){showToast('Draw something first ✦');return;}
+    const [w,h]=outputDimensions(1080),output=document.createElement('canvas');
+    output.width=w;output.height=h;paint(output.getContext('2d',{alpha:false}),w,h,cycleTime(),state.strokes,state.motion);
+    output.toBlob(blob=>{if(blob){downloadBlob(blob,'wiggle-doodle.png');showToast('PNG exported ✦');}else showToast('Could not create a PNG.');},'image/png');
+  });
+  $('undo').addEventListener('click',()=>{if(exporting||!state.strokes.length)return;state.redo.push(state.strokes.pop());persist();updateStatus();});
+  $('redo').addEventListener('click',()=>{if(exporting||!state.redo.length)return;state.strokes.push(state.redo.pop());persist();updateStatus();});
+  $('clear').addEventListener('click',()=>{
+    if(exporting||!state.strokes.length)return;
+    if(!confirm('Clear your drawing? This cannot be undone.'))return;
+    state.strokes=[];state.redo=[];persist();updateStatus();showToast('Canvas cleared.');
+  });
+  brushButtons.forEach(btn=>btn.addEventListener('click',()=>{
+    if(exporting)return;
+    state.brush=btn.dataset.brush;
+    brushButtons.forEach(b=>{const selected=b===btn;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',String(selected));});
+    if(state.brush==='bleed')showToast('Soft bleed adds a feathery edge ✦');
+  }));
+  function setColor(value) {
+    state.color=value;
+    colorButtons.forEach(b=>{const selected=b.dataset.color.toLowerCase()===value.toLowerCase();b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',String(selected));});
+  }
+  colorButtons.forEach(btn=>btn.addEventListener('click',()=>setColor(btn.dataset.color)));
+  $('customColor').addEventListener('input',e=>setColor(e.target.value));
+  $('size').addEventListener('input',e=>{state.size=+e.target.value;$('sizeValue').textContent=String(state.size);});
+  $('motion').addEventListener('change',e=>{state.motion=e.target.checked;persist();});
+  $('intensity').addEventListener('input',e=>{state.intensity=+e.target.value;$('intensityValue').textContent=`${state.intensity===0?'Still':state.intensity<31?'Gentle':state.intensity<65?'Medium':'Lively'} · ${state.intensity}%`;persist();});
+  $('format').addEventListener('change',e=>{
+    if(exporting)return;
+    const next=e.target.value;if(!formats[next]||next===state.format)return;
+    if(state.strokes.length&&!confirm('Switching format will stretch existing doodles. Continue?')){e.target.value=state.format;return;}
+    state.format=next;applyFormat();persist();
+  });
+  window.addEventListener('keydown',e=>{
+    const field=e.target&&['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName);if(field)return;
+    if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='z'){e.preventDefault();$('undo').click();}
+    else if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='y'){e.preventDefault();$('redo').click();}
+  });
+  function sample() {
+    if(state.strokes.length&&!confirm('Replace the current artwork with a sample doodle?'))return;
+    const line=(brush,color,size,points)=>({brush,color,size,seed:1.2+state.strokes.length*.71,points});
+    const poly=(cx,cy,rx,ry,n,start=-Math.PI/2)=>Array.from({length:n+1},(_,i)=>({x:cx+rx*Math.cos(start+i*TWO_PI/n),y:cy+ry*Math.sin(start+i*TWO_PI/n)}));
+    const heart=Array.from({length:95},(_,i)=>{const a=i/94*TWO_PI;return {x:.5+.0108*(16*Math.sin(a)**3),y:.42-.012*(13*Math.cos(a)-5*Math.cos(2*a)-2*Math.cos(3*a)-Math.cos(4*a))};});
+    state.strokes=[line('bleed','#e25385',16,heart),line('kawaii','#202027',8,poly(.5,.67,.19,.095,80)),
+      line('wiggle','#202027',5,poly(.44,.655,.010,.015,18)),line('wiggle','#202027',5,poly(.56,.655,.010,.015,18)),
+      line('wiggle','#e25385',6,[{x:.46,y:.717},{x:.47,y:.726},{x:.49,y:.732},{x:.51,y:.732},{x:.53,y:.725},{x:.54,y:.717}])];
+    state.redo=[];persist();updateStatus();showToast('A little sample to test your brushes & MP4 ✦');
+  }
+  $('demo').addEventListener('click',sample);
+
+  function beginProgress() {
+    exporting=true;$('record').disabled=true;$('record').textContent='Making your MP4…';
+    $('exportProgress').hidden=false;$('progressFill').style.width='0%';updateStatus();
+  }
+  function progress(ratio) {$('progressFill').style.width=`${Math.max(0,Math.min(100,ratio*100)).toFixed(1)}%`;}
+  function finishProgress() {
+    exporting=false;$('record').disabled=false;$('record').textContent='▶ Export Instagram MP4 · 4s loop';
+    $('exportProgress').hidden=true;updateStatus();
+  }
+  function showVideo(blob) {
+    exportedBlob=blob;
+    if(exportedUrl)URL.revokeObjectURL(exportedUrl);
+    exportedUrl=URL.createObjectURL(blob);
+    const video=$('videoPreview');video.src=exportedUrl;video.load();
+    $('exportDialog').hidden=false;
+    video.play().catch(()=>{});
+    showToast(`MP4 ready · ${(blob.size/1048576).toFixed(1)} MB ✦`);
+  }
+  function closeVideo(){$('videoPreview').pause();$('exportDialog').hidden=true;}
+  $('closeExport').addEventListener('click',closeVideo);
+  $('exportDialog').addEventListener('click',e=>{if(e.target===$('exportDialog'))closeVideo();});
+  $('downloadVideo').addEventListener('click',()=>{if(exportedBlob)downloadBlob(exportedBlob,'wiggle-doodle-reel.mp4');});
+  $('shareVideo').addEventListener('click',async()=>{
+    if(!exportedBlob)return;
+    const file=new File([exportedBlob],'wiggle-doodle-reel.mp4',{type:'video/mp4'});
+    try{
+      if(navigator.share && (!navigator.canShare||navigator.canShare({files:[file]}))) {
+        await navigator.share({files:[file],title:'Wiggle Doodle Reel'});return;
+      }
+    }catch(e){if(e.name==='AbortError')return;console.warn('Share failed',e);}
+    downloadBlob(exportedBlob,'wiggle-doodle-reel.mp4');
+    showToast('Video downloaded. On iPad, open Files to save or share it.');
+  });
+
+  function chooseWebCodec(w,h) {
+    if(!('VideoEncoder' in window)&&!('VideoFrame' in window))return Promise.resolve(null);
+    if(!window.VideoEncoder || !window.VideoFrame || !WiggleMp4)return Promise.resolve(null);
+    const codecs=['avc1.420028','avc1.42E028','avc1.4D4028'];
+    return (async()=>{
+      for(const codec of codecs){
+        const config={codec,width:w,height:h,bitrate:w>=1000?7000000:4000000,framerate:FPS,latencyMode:'realtime',avc:{format:'avc'}};
+        try{const response=await VideoEncoder.isConfigSupported(config);if(response.supported)return response.config;}catch(e){}
+      }
+      return null;
+    })();
+  }
+  async function encodeWithWebCodecs(w,h,ctx,out,config) {
+    const chunks=[];let avcc=null;let callbackError=null;
+    const encoder=new VideoEncoder({
+      output(chunk,metadata){
+        if(metadata?.decoderConfig?.description)avcc=new Uint8Array(metadata.decoderConfig.description);
+        const data=new Uint8Array(chunk.byteLength);chunk.copyTo(data);
+        chunks.push({key:chunk.type==='key',data});
+      },
+      error(e){callbackError=e;}
+    });
+    encoder.configure(config);
+    try{
+      for(let i=0;i<FPS*LOOP;i++){
+        if(callbackError)throw callbackError;
+        paint(ctx,w,h,i/FPS,state.strokes,state.motion);
+        const frame=new VideoFrame(out,{timestamp:Math.round(i*1000000/FPS),duration:Math.round(1000000/FPS)});
+        try{encoder.encode(frame,{keyFrame:i%60===0});}finally{frame.close();}
+        if(i%6===5){await encoder.flush();progress((i+1)/(FPS*LOOP));await new Promise(r=>setTimeout(r,0));}
+      }
+      await encoder.flush();
+      if(callbackError)throw callbackError;
+      if(chunks.length!==FPS*LOOP)throw new Error('Some encoded frames are missing.');
+      if(!avcc)throw new Error('This browser did not provide the H.264 MP4 header.');
+      progress(1);
+      return WiggleMp4.muxAVC(chunks,avcc,w,h,FPS);
+    } finally {encoder.close();}
+  }
+  function chooseMediaRecorder() {
+    if(!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream)return null;
+    const formats=['video/mp4;codecs=avc1.42E028','video/mp4;codecs=avc1','video/mp4'];
+    return formats.find(type=>{try{return MediaRecorder.isTypeSupported(type);}catch(e){return false;}})||null;
+  }
+  function encodeWithRecorder(w,h,ctx,out,mime) {
+    return new Promise((resolve,reject)=>{
+      let stream,recorder,animationId,stopTimer;
+      const chunks=[];let done=false;
+      function cleanup(){cancelAnimationFrame(animationId);clearTimeout(stopTimer);if(stream)stream.getTracks().forEach(t=>t.stop());}
+      function finish(err,blob){if(done)return;done=true;cleanup();err?reject(err):resolve(blob);}
+      try {
+        paint(ctx,w,h,0,state.strokes,state.motion);
+        stream=out.captureStream(FPS);
+        recorder=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:w>=1000?7000000:4000000});
+        recorder.addEventListener('dataavailable',e=>{if(e.data.size)chunks.push(e.data);});
+        recorder.addEventListener('error',e=>finish(e.error||new Error('Safari MP4 encoding error')));
+        recorder.addEventListener('stop',()=>{
+          const blob=new Blob(chunks,{type:'video/mp4'});
+          if(blob.size<1000)finish(new Error('No usable video frames were produced.'));
+          else {progress(1);finish(null,blob);}
+        });
+        const start=performance.now();
+        recorder.start(300);
+        function frame(now) {
+          const seconds=(now-start)/1000;
+          paint(ctx,w,h,Math.min(seconds,LOOP-.001),state.strokes,state.motion);
+          progress(Math.min(.99,seconds/LOOP));
+          if(seconds<LOOP && recorder.state==='recording') animationId=requestAnimationFrame(frame);
+          else if(recorder.state==='recording')recorder.stop();
+        }
+        animationId=requestAnimationFrame(frame);
+        // Prevent indefinitely stuck recordings if Safari throttles the RAF loop.
+        stopTimer=setTimeout(()=>{if(recorder.state==='recording')recorder.stop();},(LOOP+2)*1000);
+      }catch(e){finish(e);}
+    });
+  }
+  async function exportMP4() {
+    if(exporting)return;
+    if(!state.strokes.length){showToast('Draw a doodle first, or try the sample ✦');return;}
+    const quality=Number($('quality').value)||1080,[w,h]=outputDimensions(quality);
+    const out=document.createElement('canvas');out.width=w;out.height=h;
+    const ctx=out.getContext('2d',{alpha:false});
+    beginProgress();
+    try {
+      const recorderMime=chooseMediaRecorder();
+      const codecConfig=await chooseWebCodec(w,h);
+      let blob;
+      // On iOS Safari use its native MP4 recorder first; some Safari versions
+      // expose VideoEncoder but do not implement reliable MP4 AVC metadata.
+      const iOS=/iPad|iPhone|iPod/.test(navigator.userAgent)|| (navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+      if(iOS && recorderMime) {
+        try{blob=await encodeWithRecorder(w,h,ctx,out,recorderMime);}
+        catch(error){console.warn('MediaRecorder failed, trying WebCodecs',error);if(codecConfig)blob=await encodeWithWebCodecs(w,h,ctx,out,codecConfig);else throw error;}
+      } else if(codecConfig) {
+        try{blob=await encodeWithWebCodecs(w,h,ctx,out,codecConfig);}
+        catch(error){console.warn('WebCodecs failed, trying native recorder',error);if(recorderMime)blob=await encodeWithRecorder(w,h,ctx,out,recorderMime);else throw error;}
+      } else if(recorderMime){blob=await encodeWithRecorder(w,h,ctx,out,recorderMime);}
+      else throw new Error('This browser cannot encode H.264 MP4. Try Safari on iPad or Chrome/Edge on desktop.');
+      showVideo(blob);
+    }catch(error){console.error('MP4 export failed',error);showToast(error.message||'Could not export MP4 on this browser.');}
+    finally{finishProgress();}
+  }
+  $('record').addEventListener('click',exportMP4);
+
+  restore();
+  $('motion').checked=state.motion;
+  $('intensity').value=String(state.intensity);
+  $('intensityValue').textContent=`${state.intensity===0?'Still':state.intensity<31?'Gentle':state.intensity<65?'Medium':'Lively'} · ${state.intensity}%`;
+  applyFormat();updateStatus();
+  if('ResizeObserver' in window)new ResizeObserver(resize).observe(board);else addEventListener('resize',resize);
+  requestAnimationFrame(animate);
+  if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+    addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(e=>console.warn('Offline cache unavailable',e)));
+  }
+})();
+
+  </script>
+</body>
+</html>
