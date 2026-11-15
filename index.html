@@ -10,7 +10,7 @@
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="icon" type="image/svg+xml" href="./icons/icon.svg" />
   <link rel="apple-touch-icon" href="./icons/icon.svg" />
-  <meta name="description" content="Draw lively little doodles with five delightful brushes. Seven gentle animated brushes and Instagram-ready MP4 export." />
+  <meta name="description" content="Seven delightfully different animated brushes: living wiggles, bouncy squiggles, glitter trails and soft kawaii bleed. Export looping MP4 Reels." />
 
 
 
@@ -93,6 +93,20 @@ select { width:100%; padding: 11px; border:1px solid #e8ddd5; color:#403833; bac
 .export-actions {display:flex;gap:9px;}
 .export-actions button {flex:1;min-width:0;}
 .export-actions .outline-btn {margin-top:0;}
+/* V2.2: brush personalities must be visible before drawing, too. */
+.brush-detail {font-size:9px;font-weight:600;letter-spacing:.05px;color:#9f897d;line-height:1.1;}
+.brush.active .brush-detail {color:#c27044;}
+.brush-preview {position:relative;display:inline-block;}
+.squiggle-preview {font-weight:900;color:#5f6cdb;transform:rotate(-9deg);animation:spring-preview 1.2s ease-in-out infinite;}
+.wiggle-preview {animation:wobble-preview 2s ease-in-out infinite;}
+.sparkle-preview {color:#efb548;text-shadow:0 0 7px #efb54880;animation:glitter-preview 1.6s ease-in-out infinite;}
+.mini-spark {position:absolute;font-size:17px;top:-5px;right:-12px;color:#e78fa9;animation:glitter-preview 1.2s ease-in-out infinite reverse;}
+@keyframes spring-preview {0%,100%{transform:translateX(-2px) rotate(-9deg)}50%{transform:translateX(3px) rotate(5deg)}}
+@keyframes wobble-preview {0%,100%{transform:rotate(-9deg)}50%{transform:rotate(9deg)}}
+@keyframes glitter-preview {0%,100%{opacity:.6;filter:brightness(.95);transform:scale(.9)}50%{opacity:1;filter:brightness(1.25);transform:scale(1.16)}}
+@media (prefers-reduced-motion:reduce){.brush-preview,.mini-spark{animation:none!important}}
+.showcase-btn {width:100%;margin-top:11px;padding:9px 11px;border:1px dashed #edb994;border-radius:11px;background:#fff8f0;color:#bd6335;font-size:11px;font-weight:750;}
+.showcase-btn:hover {background:#ffefe1;}
 @media(max-width:750px) {
  .brush-grid {grid-template-columns:repeat(4,minmax(0,1fr));}
  .brush{min-height:68px;font-size:10px;}
@@ -113,7 +127,7 @@ select { width:100%; padding: 11px; border:1px solid #e8ddd5; color:#403833; bac
 <body>
   <div class="app">
     <header class="topbar">
-      <div class="brand"><span class="brand-symbol" aria-hidden="true">〰</span><span>wiggle<span class="brand-accent">doodle</span></span><span class="beta">v2.1</span></div>
+      <div class="brand"><span class="brand-symbol" aria-hidden="true">〰</span><span>wiggle<span class="brand-accent">doodle</span></span><span class="beta">v2.2</span></div>
       <div class="top-actions">
         <button id="undo" title="Undo" aria-label="Undo" class="icon-btn" disabled>↶ <span class="btn-word">Undo</span></button>
         <button id="redo" title="Redo" aria-label="Redo" class="icon-btn" disabled>↷ <span class="btn-word">Redo</span></button>
@@ -125,16 +139,17 @@ select { width:100%; padding: 11px; border:1px solid #e8ddd5; color:#403833; bac
     <main class="workspace">
       <section class="tools-panel" aria-label="Drawing tools">
         <div class="panel-section">
-          <h2>Brushes <span class="hint">pick a vibe</span></h2>
+          <h2>Brushes <span class="hint">seven little personalities</span></h2>
           <div class="brush-grid" id="brushes">
             <button class="brush" data-brush="ink" aria-pressed="false"><span class="brush-preview ink-preview">〰</span><span>Ink</span></button>
-            <button class="brush active" data-brush="wiggle" aria-pressed="true"><span class="brush-preview wiggle-preview">∿</span><span>Wiggle</span></button>
-            <button class="brush" data-brush="squiggle" aria-pressed="false"><span class="brush-preview squiggle-preview">≋</span><span>Squiggle</span></button>
+            <button class="brush active" data-brush="wiggle" aria-pressed="true"><span class="brush-preview wiggle-preview">∿</span><span>Wiggle</span><small class="brush-detail">bouncy</small></button>
+            <button class="brush" data-brush="squiggle" aria-pressed="false"><span class="brush-preview squiggle-preview">〽</span><span>Squiggle</span><small class="brush-detail">springy zigzag</small></button>
             <button class="brush" data-brush="rainbow" aria-pressed="false"><span class="brush-preview rainbow-preview">〰</span><span>Rainbow</span></button>
-            <button class="brush" data-brush="sparkle" aria-pressed="false"><span class="brush-preview sparkle-preview">✧</span><span>Sparkle</span></button>
+            <button class="brush" data-brush="sparkle" aria-pressed="false"><span class="brush-preview sparkle-preview">✦<span class="mini-spark">✧</span></span><span>Sparkle</span><small class="brush-detail">glitter trail</small></button>
             <button class="brush" data-brush="kawaii" aria-pressed="false"><span class="brush-preview kawaii-preview">⌣</span><span>Kawaii</span></button>
             <button class="brush" data-brush="bleed" aria-pressed="false"><span class="brush-preview bleed-preview">〰</span><span>Soft bleed</span></button>
           </div>
+          <button class="showcase-btn" id="showcase" type="button">✦ Try the animated brush showcase</button>
         </div>
         <div class="panel-section">
           <h2>Color</h2>
@@ -155,9 +170,9 @@ select { width:100%; padding: 11px; border:1px solid #e8ddd5; color:#403833; bac
         </div>
         <div class="panel-section">
           <div class="section-head"><h2>Keep it moving</h2><label class="toggle"><input type="checkbox" id="motion" checked /><span class="switch"></span></label></div>
-          <p class="helper">Lines stay steady while you draw; they only come alive when you lift your Pencil.</p>
-          <div class="section-head motion-heading"><label for="intensity">Wiggle strength</label><output id="intensityValue">Medium · 38%</output></div>
-          <input id="intensity" type="range" min="0" max="100" step="1" value="38" aria-label="Wiggle strength" />
+          <p class="helper">Draw with a steady Pencil. Afterwards: bouncy lines, springy zigzags and dancing glitter. All loop perfectly in your Reel.</p>
+          <div class="section-head motion-heading"><label for="intensity">Wiggle strength</label><output id="intensityValue">Lively · 48%</output></div>
+          <input id="intensity" type="range" min="0" max="100" step="1" value="48" aria-label="Wiggle strength" />
           <div class="size-labels"><span>Still</span><span>More lively</span></div>
         </div>
         <div class="panel-section output-section">
@@ -279,7 +294,7 @@ select { width:100%; padding: 11px; border:1px solid #e8ddd5; color:#403833; bac
   const LOOP=4, FPS=30, TWO_PI=Math.PI*2;
   const key='wiggle-doodle-drawing-v2';
   const oldKey='wiggle-doodle-drawing-v1';
-  const state={strokes:[],redo:[],brush:'wiggle',color:'#202027',size:8,motion:true,intensity:38,format:'portrait'};
+  const state={strokes:[],redo:[],brush:'wiggle',color:'#202027',size:8,motion:true,intensity:48,format:'portrait'};
   let activePointer=null,currentStroke=null,autosaveId=null,toastTimer=null;
   let exporting=false,exportedBlob=null,exportedUrl=null;
   let t0=performance.now();
@@ -312,6 +327,12 @@ select { width:100%; padding: 11px; border:1px solid #e8ddd5; color:#403833; bac
           localStorage.setItem(migratedKey,'1');
           if(saved.intensity===18){state.intensity=38;persist();}
         }
+      }
+      // Lift only the previously shipped 38% default; preserve other chosen values.
+      const motionUpgradeKey='wiggle-doodle-v2-2-motion';
+      if(!localStorage.getItem(motionUpgradeKey)){
+        localStorage.setItem(motionUpgradeKey,'1');
+        if(state.intensity===38){state.intensity=48;persist();}
       }
       if(fromOld && state.strokes.length) showToast('Your original drawing is here ✦');
     }catch(err){console.warn('Restore failed',err);}
@@ -379,20 +400,48 @@ select { width:100%; padding: 11px; border:1px solid #e8ddd5; color:#403833; bac
   canvas.addEventListener('pointercancel',endStroke);
   canvas.addEventListener('lostpointercapture',endStroke);
 
-  // All frequencies are integral multiples of one four-second period:
-  // the animation at t=4.0 is identical to t=0.0, enabling a clean loop.
-  // Motion displaces points along their local normal; the new 38% default
-  // produces a visible but still small wobble. Drawing remains steady.
+  // Every animated frequency is an integer multiple of the four-second loop.
+  // Nothing moves under the Pencil: only completed strokes animate.
+  // Squiggle gets its own resampled traveling zigzag, not Wiggle's soft sway.
   function pointsFor(s,w,h,t,animated,intensity) {
     const original=s.points,pts=new Array(original.length);
+    const phase=TWO_PI*t/LOOP;
+    const width=Math.max(.5,s.size*w/600);
+    if(s.brush==='squiggle') {
+      // Sample evenly along the hand-drawn path so even sparse Pencil points
+      // get a consistently distinct, lively spring shape.
+      if(original.length===1)return [{x:original[0].x*w,y:original[0].y*h}];
+      const result=[],spacing=Math.max(3,Math.min(9,width*.52));
+      const wavelength=Math.max(20,width*3.9),seed=s.seed||1.32;
+      const amplitude=width*(.38+intensity*.0105);
+      const travel=animated?phase*3:0;
+      let distance=0;
+      for(let i=1;i<original.length;i++) {
+        const a=original[i-1],b=original[i];
+        const x0=a.x*w,y0=a.y*h,x1=b.x*w,y1=b.y*h;
+        const dx=x1-x0,dy=y1-y0,len=Math.hypot(dx,dy);
+        if(len<.01)continue;
+        const nx=-dy/len,ny=dx/len,n=Math.ceil(len/spacing);
+        for(let j=0;j<n;j++) {
+          const along=(j/n)*len,arc=distance+along;
+          // A moving zigzag with a little second harmonic: recognizably
+          // springy even when paused; 3 clean traveling cycles per loop.
+          const v=arc/wavelength*TWO_PI-travel+seed;
+          const zig=(Math.sin(v)+.19*Math.sin(v*3+.7))*.88*amplitude;
+          result.push({x:x0+dx*j/n+nx*zig,y:y0+dy*j/n+ny*zig});
+        }
+        distance+=len;
+      }
+      const last=original[original.length-1];
+      result.push({x:last.x*w,y:last.y*h});
+      return result;
+    }
     if(!animated||s.brush==='ink'||intensity===0){
       for(let i=0;i<original.length;i++)pts[i]={x:original[i].x*w,y:original[i].y*h};
       return pts;
     }
-    const phase=TWO_PI*(t/LOOP);
-    const width=Math.max(.5,s.size*w/600);
-    const levels={wiggle:.19,squiggle:.28,rainbow:.10,sparkle:.075,kawaii:.11,bleed:.105};
-    const maxAmplitude=Math.min(width*.6,Math.max(.10,(levels[s.brush]||.12)*width*(intensity/18)));
+    const levels={wiggle:.23,rainbow:.12,sparkle:.07,kawaii:.12,bleed:.12};
+    const maxAmplitude=Math.min(width*.83,Math.max(.10,(levels[s.brush]||.13)*width*(intensity/22)));
     let accumulated=0;
     for(let i=0;i<original.length;i++) {
       const p=original[i],prev=original[Math.max(0,i-1)],next=original[Math.min(original.length-1,i+1)];
@@ -401,7 +450,7 @@ select { width:100%; padding: 11px; border:1px solid #e8ddd5; color:#403833; bac
       const dx=(next.x-prev.x)*w,dy=(next.y-prev.y)*h;
       const inv=1/(Math.hypot(dx,dy)||1);
       const seed=s.seed||1.32;
-      const wave=.72*Math.sin(phase+accumulated*.052+seed)+.28*Math.sin(phase*2-accumulated*.025+seed*.73);
+      const wave=.67*Math.sin(phase*2+accumulated*.052+seed)+.33*Math.sin(phase*3-accumulated*.027+seed*.73);
       const disp=maxAmplitude*wave;
       pts[i]={x:x-dy*inv*disp,y:y+dx*inv*disp};
     }
@@ -429,6 +478,70 @@ select { width:100%; padding: 11px; border:1px solid #e8ddd5; color:#403833; bac
     if(pts.length===1){ctx.beginPath();ctx.arc(pts[0].x,pts[0].y,Math.max(0.6,thickness/2),0,TWO_PI);ctx.fill();}
     else ctx.stroke();
   }
+  function strokeZigzag(ctx,pts,width,color,alpha){
+    ctx.globalAlpha=alpha;ctx.lineWidth=width;ctx.strokeStyle=color;
+    ctx.beginPath();
+    if(pts.length===1){ctx.arc(pts[0].x,pts[0].y,Math.max(.7,width/2),0,TWO_PI);ctx.fillStyle=color;ctx.fill();}
+    else {ctx.moveTo(pts[0].x,pts[0].y);for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i].x,pts[i].y);ctx.stroke();}
+  }
+  function glitterBurst(ctx,x,y,r,alpha,rotation) {
+    if(alpha<=.003)return;
+    ctx.save();ctx.translate(x,y);ctx.rotate(rotation);ctx.globalAlpha=alpha;
+    ctx.shadowColor='#ffd06a';ctx.shadowBlur=r*1.5;
+    star(ctx,0,0,r,'#ffc857');
+    ctx.shadowBlur=0;star(ctx,0,0,r*.55,'#fff9e6');
+    ctx.globalAlpha=alpha*.75;ctx.strokeStyle='#ffe19c';ctx.lineWidth=Math.max(.65,r*.075);
+    ctx.beginPath();
+    ctx.moveTo(-r*1.5,0);ctx.lineTo(-r*.94,0);
+    ctx.moveTo(r*.94,0);ctx.lineTo(r*1.5,0);
+    ctx.moveTo(0,-r*1.5);ctx.lineTo(0,-r*.94);
+    ctx.moveTo(0,r*.94);ctx.lineTo(0,r*1.5);ctx.stroke();
+    ctx.restore();
+  }
+  function glitterAt(pts,lengths,distance) {
+    const total=lengths[lengths.length-1]||0,target=Math.max(0,Math.min(total,distance));
+    let lo=0,hi=lengths.length-1;
+    while(lo+1<hi){const m=(lo+hi)>>1;if(lengths[m]<target)lo=m;else hi=m;}
+    const span=lengths[hi]-lengths[lo]||1,k=(target-lengths[lo])/span;
+    return {x:pts[lo].x+(pts[hi].x-pts[lo].x)*k,y:pts[lo].y+(pts[hi].y-pts[lo].y)*k};
+  }
+  function glitterTrail(ctx,pts,thickness,s,t,animated,intensity) {
+    const phase=animated?TWO_PI*t/LOOP:0;
+    // A sheer ink trail, warm shimmering center and travelling fairy-light bursts.
+    strokeLine(ctx,pts,thickness*.86,s.color,.57);
+    ctx.shadowColor='#ffcc6b';ctx.shadowBlur=thickness*.9;
+    strokeLine(ctx,pts,thickness*.36,'#ffd56e',.83);
+    ctx.shadowBlur=0;
+    const lengths=[0];
+    for(let i=1;i<pts.length;i++)lengths.push(lengths[i-1]+Math.hypot(pts[i].x-pts[i-1].x,pts[i].y-pts[i-1].y));
+    const total=lengths[lengths.length-1];
+    if(total<.01) {
+      glitterBurst(ctx,pts[0].x,pts[0].y,thickness*1.25,1,phase);
+      return;
+    }
+    const count=Math.max(4,Math.min(52,Math.round(total/Math.max(18,thickness*2.8))));
+    for(let i=0;i<count;i++) {
+      const frac=(i+.5)/count,p=glitterAt(pts,lengths,total*frac);
+      const pulse=Math.pow(.5+.5*Math.sin(phase*3+i*2.45+(s.seed||1)),2);
+      const side=((i%2)?1:-1)*thickness*(.70+.20*Math.sin(i*1.7));
+      const next=glitterAt(pts,lengths,total*Math.min(.999,frac+.003));
+      const dx=next.x-p.x,dy=next.y-p.y,inv=1/(Math.hypot(dx,dy)||1);
+      const x=p.x-dy*inv*side,y=p.y+dx*inv*side;
+      ctx.globalAlpha=.28+.72*pulse;ctx.fillStyle=(i%3===0?'#f5a3c6':'#ffc766');
+      ctx.beginPath();ctx.arc(x,y,Math.max(.9,thickness*(.105+.10*pulse)),0,TWO_PI);ctx.fill();
+      if(i%7===1)glitterBurst(ctx,x,y,thickness*(.32+.33*pulse),.27+.58*pulse,phase+i);
+    }
+    ctx.globalAlpha=1;
+    const strength=.65+.35*(intensity/100);
+    for(let i=0;i<3;i++) {
+      const f=animated?(t/LOOP+i/3+.08)%1:(.21+i*.27);
+      // Bursts fade at the endpoints so 4-second looping has no teleport flash.
+      const fade=animated?Math.pow(Math.sin(Math.PI*f),2):1;
+      const p=glitterAt(pts,lengths,total*f);
+      const r=thickness*(.9+(i%2)*.34)*strength*(.85+.15*Math.sin(phase*2+i));
+      glitterBurst(ctx,p.x,p.y,r,fade*(.78+.20*Math.sin(phase*3+i)),phase+i*.56);
+    }
+  }
   function drawStroke(ctx,s,w,h,t,animated,intensity) {
     if(!s||!s.points.length)return;
     const pts=pointsFor(s,w,h,t,animated,intensity);
@@ -450,15 +563,13 @@ select { width:100%; padding: 11px; border:1px solid #e8ddd5; color:#403833; bac
       const gradient=ctx.createLinearGradient(0,0,w,h*.3);
       for(let i=0;i<=8;i++)gradient.addColorStop(i/8,`hsl(${(i*48+(animated?t/LOOP*360:0))%360} 80% 63%)`);
       strokeLine(ctx,pts,thickness,gradient,1);
+    } else if(s.brush==='squiggle') {
+      ctx.shadowColor=s.color;ctx.shadowBlur=thickness*.5;
+      strokeZigzag(ctx,pts,thickness*1.38,s.color,.16);
+      ctx.shadowBlur=0;
+      strokeZigzag(ctx,pts,thickness*.82,s.color,.97);
     } else if(s.brush==='sparkle') {
-      strokeLine(ctx,pts,thickness*.75,s.color,1);
-      const spacing=Math.max(3,Math.floor(pts.length/24));
-      for(let i=0;i<pts.length;i+=spacing) {
-        const p=pts[i],phase=i*.71+ (animated?TWO_PI*t/LOOP:0);
-        const r=thickness*(.34+.27*(.5+.5*Math.sin(phase)));
-        const offset=thickness*1.04;
-        star(ctx,p.x+Math.cos(i*2.21)*offset,p.y+Math.sin(i*2.21)*offset,r,s.color);
-      }
+      glitterTrail(ctx,pts,thickness,s,t,animated,intensity);
     } else strokeLine(ctx,pts,thickness,s.color,1);
     ctx.restore();
   }
@@ -501,6 +612,8 @@ select { width:100%; padding: 11px; border:1px solid #e8ddd5; color:#403833; bac
     state.brush=btn.dataset.brush;
     brushButtons.forEach(b=>{const selected=b===btn;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',String(selected));});
     if(state.brush==='bleed')showToast('Soft bleed adds a feathery edge ✦');
+    if(state.brush==='squiggle')showToast('Springy zigzags that travel along your line ⚡');
+    if(state.brush==='sparkle')showToast('Watch the glitter dance along your line ✨');
   }));
   function setColor(value) {
     state.color=value;
@@ -530,9 +643,14 @@ select { width:100%; padding: 11px; border:1px solid #e8ddd5; color:#403833; bac
     state.strokes=[line('bleed','#e25385',16,heart),line('kawaii','#202027',8,poly(.5,.67,.19,.095,80)),
       line('wiggle','#202027',5,poly(.44,.655,.010,.015,18)),line('wiggle','#202027',5,poly(.56,.655,.010,.015,18)),
       line('wiggle','#e25385',6,[{x:.46,y:.717},{x:.47,y:.726},{x:.49,y:.732},{x:.51,y:.732},{x:.53,y:.725},{x:.54,y:.717}])];
-    state.redo=[];persist();updateStatus();showToast('A little sample to test your brushes & MP4 ✦');
+    // Demo includes the new animated effects, not just a pretty static drawing.
+    const trail=Array.from({length:85},(_,i)=>{const u=i/84;return {x:.20+u*.60,y:.81+.017*Math.sin(u*TWO_PI*1.5)};});
+    const glitter=Array.from({length:72},(_,i)=>{const u=i/71;return {x:.22+u*.56,y:.28+.038*Math.sin(u*TWO_PI*1.2)};});
+    state.strokes.push(line('squiggle','#745ad4',5,trail),line('sparkle','#eda858',5,glitter));
+    state.redo=[];persist();updateStatus();showToast('Watch the springy purple line and the dancing glitter ✦');
   }
   $('demo').addEventListener('click',sample);
+  $('showcase').addEventListener('click',sample);
 
   function beginProgress() {
     exporting=true;$('record').disabled=true;$('record').textContent='Making your MP4…';
