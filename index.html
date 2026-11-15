@@ -121,13 +121,159 @@ select { width:100%; padding: 11px; border:1px solid #e8ddd5; color:#403833; bac
  .brand{font-size:17px;}
 }
 
+
+/* V2.3 — one-screen layout. Desktop keeps the original spacious editor.
+   Tablets use a compact sidebar, phones use a dedicated bottom tool dock. */
+@media (max-width:1199px), (pointer:coarse) {
+  html,body {height:100%;overflow:hidden;overscroll-behavior:none;}
+  .app {height:100dvh;min-height:0;max-height:100dvh;overflow:hidden;}
+  .topbar {flex:0 0 auto;min-height:51px;padding:max(6px,env(safe-area-inset-top)) 12px 6px;gap:7px;}
+  .brand {font-size:18px;letter-spacing:-1px;}
+  .brand-symbol {width:30px;height:30px;font-size:23px;border-radius:9px;}
+  .top-actions {gap:5px;}
+  .icon-btn,.primary-btn {min-height:36px;padding:7px 9px;}
+  .workspace {height:0;flex:1;min-height:0;display:flex;flex-direction:row;}
+  .tools-panel {
+    display:block;flex:0 0 246px;width:246px;height:100%;
+    padding:9px 11px max(10px,env(safe-area-inset-bottom));
+    overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;
+    border-right:1px solid #ece4dd;border-top:0;
+  }
+  .panel-section {padding:4px 0 9px;margin:0 0 5px;}
+  .panel-section h2 {font-size:12px;margin:0 0 6px;}
+  .brush-grid {grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;}
+  .brush {min-height:60px;border-radius:10px;font-size:9px;gap:0;}
+  .brush-preview {font-size:23px;}
+  .brush-detail {font-size:7px;}
+  .showcase-btn {margin-top:6px;padding:6px;font-size:10px;}
+  .colors {gap:7px;}
+  .color-chip,.custom-color {width:26px;height:26px;}
+  .section-head h2 {margin:0;}
+  .section-head output {font-size:12px;}
+  .size-labels {font-size:9px;}
+  .motion-heading {margin-top:7px;}
+  .helper {font-size:9px;line-height:1.3;}
+  .export-label {margin:6px 0 3px;}
+  .output-section select {padding:7px;}
+  .output-section .outline-btn {min-height:35px;margin-top:7px;font-size:11px;padding:8px;}
+  .stage {flex:1;min-height:0;min-width:0;padding:9px 12px 5px;}
+  .stage-header {gap:4px;font-size:11px;flex:0 0 auto;}
+  .stage-footer {padding:5px 2px;font-size:9px;flex:0 0 auto;}
+  .artboard-wrap {flex:1;min-width:0;min-height:0;padding:3px 0;overflow:hidden;}
+  .artboard,.artboard[data-format="portrait"],.artboard[data-format="landscape"] {
+    flex-shrink:0;max-height:none;max-width:none;
+  }
+}
+@media (max-width:720px) {
+  .topbar {min-height:46px;padding:max(5px,env(safe-area-inset-top)) 9px 5px;gap:4px;}
+  .brand {font-size:15px;letter-spacing:-.6px;}
+  .brand-symbol {width:27px;height:27px;font-size:20px;margin-right:3px;}
+  .top-actions {gap:3px;}
+  .top-actions .btn-word {display:none;}
+  .top-actions .icon-btn,.top-actions .primary-btn {padding:5px 7px;min-height:32px;border-radius:9px;}
+  .top-actions .primary-btn {font-size:11px;}
+  .workspace {flex-direction:column;}
+  .stage {order:0;flex:1;min-height:0;padding:5px 8px 0;}
+  .stage-header {height:17px;font-size:10px;line-height:1.1;}
+  .stage-status,.stage-footer {display:none;}
+  .artboard-wrap {padding:2px 0 5px;}
+  .tools-panel {
+    order:1;flex:0 0 auto;width:100%;height:auto;max-height:none;
+    display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    grid-template-rows:auto auto auto auto;
+    gap:5px 9px;overflow:hidden;
+    padding:6px 10px max(8px,env(safe-area-inset-bottom));
+    background:#fff;border-top:1px solid #ece4dd;border-right:0;
+    box-shadow:0 -3px 16px #4935230d;
+  }
+  .panel-section {border:0;padding:0;margin:0;min-width:0;}
+  .tools-panel .panel-section:first-child {grid-column:1 / -1;grid-row:1;}
+  .tools-panel .panel-section:nth-child(2) {grid-column:1;grid-row:2;display:flex;align-items:center;}
+  .tools-panel .panel-section:nth-child(3) {grid-column:2;grid-row:2;}
+  .tools-panel .panel-section:nth-child(4) {grid-column:1 / -1;grid-row:3;}
+  .tools-panel .panel-section:nth-child(5) {grid-column:1 / -1;grid-row:4;}
+  .panel-section>h2 {display:none;}
+  .brush-grid {grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;}
+  .brush {min-height:48px;padding:2px 0;border-radius:8px;font-size:9px;gap:0;}
+  .brush-preview {font-size:20px;line-height:1.1;}
+  .brush-detail,.showcase-btn {display:none;}
+  .colors {display:flex;flex-wrap:nowrap;justify-content:space-between;gap:2px;width:100%;}
+  .color-chip,.custom-color {flex:0 0 21px;width:21px;height:21px;}
+  .custom-color {font-size:16px;}
+  .panel-section:nth-child(3) .section-head {min-height:16px;}
+  .panel-section:nth-child(3) .section-head h2 {display:block;font-size:10px;margin:0;}
+  .panel-section:nth-child(3) .section-head output {font-size:10px;}
+  .panel-section:nth-child(3) input[type=range] {margin:0;height:15px;}
+  .size-labels {display:none;}
+  .panel-section:nth-child(4) {
+    display:flex;align-items:center;gap:8px;min-height:28px;
+  }
+  .panel-section:nth-child(4) > .section-head:first-child {flex:0 0 auto;gap:5px;}
+  .panel-section:nth-child(4) .section-head h2 {display:block;font-size:10px;margin:0;}
+  .panel-section:nth-child(4) .helper {display:none;}
+  .switch {width:32px;height:19px;}
+  .switch::after {width:15px;height:15px;margin:2px;}
+  .toggle input:checked + .switch::after {transform:translateX(13px);}
+  .motion-heading {margin:0;flex:0 0 auto;gap:4px;}
+  .motion-heading label,.motion-heading output {font-size:10px;}
+  .panel-section:nth-child(4) > input[type=range] {flex:1;min-width:30px;width:auto;}
+  .output-section {display:flex;align-items:center;gap:5px;min-height:36px;position:relative;}
+  .output-section select {height:35px;margin:0;padding:6px 3px;font-size:10px;border-radius:8px;min-width:0;}
+  .output-section #format {width:30%;flex:0 0 30%;}
+  .output-section #quality {width:24%;flex:0 0 24%;}
+  .output-section #record {
+    flex:1;min-width:0;width:auto;margin:0;min-height:35px;
+    padding:6px 3px;font-size:0;border-radius:8px;white-space:nowrap;
+  }
+  .output-section #record::after {content:"↗ Export MP4";font-size:11px;}
+  .output-section .export-label,.output-section #exportHelp {display:none;}
+  .output-section .progress {position:absolute;bottom:-2px;left:0;right:0;margin:0;}
+  .empty-hint {font-size:14px;}
+  .hint-swoosh {font-size:48px;}
+  .empty-hint small {font-size:9px;margin-top:4px;}
+  .demo-btn {font-size:10px;padding:7px 9px;margin-top:9px;}
+  .toast {bottom:calc(195px + env(safe-area-inset-bottom));}
+}
+@media (max-width:360px) {
+  .brand {font-size:13px;}
+  .brand-symbol {margin-right:1px;width:24px;height:24px;}
+  .top-actions .icon-btn,.top-actions .primary-btn {padding:5px 6px;}
+  .brush {font-size:8px;}
+  .brush-preview {font-size:18px;}
+  .color-chip,.custom-color {flex-basis:18px;width:18px;height:18px;}
+  .panel-section:nth-child(4) {gap:4px;}
+  .motion-heading {gap:2px;}
+  .motion-heading label,.motion-heading output {font-size:9px;}
+  .output-section select {font-size:9px;}
+  .output-section #record::after {font-size:10px;}
+}
+@media (max-height:540px) and (min-width:721px) and (pointer:coarse) {
+  /* Phone landscape: keep the canvas beside an ultra-compact control rail. */
+  .topbar {min-height:38px;padding:3px 9px;}
+  .tools-panel {flex-basis:280px;width:280px;padding:5px 8px;overflow-y:auto;}
+  .tools-panel .panel-section {padding:3px 0 5px;margin-bottom:2px;}
+  .panel-section>h2,.brush-detail,.showcase-btn,.helper,.size-labels,.export-label {display:none;}
+  .brush-grid {grid-template-columns:repeat(7,minmax(0,1fr));gap:2px;}
+  .brush {min-height:40px;font-size:8px;padding:1px 0;gap:0;}
+  .brush-preview {font-size:17px;}
+  .colors {gap:5px;}
+  .color-chip,.custom-color {width:22px;height:22px;}
+  .section-head h2 {font-size:10px;margin:0;}
+  .motion-heading {margin-top:4px;}
+  .output-section .outline-btn {margin-top:4px;min-height:29px;}
+  .output-section select {padding:5px;}
+  .stage {padding:4px 8px;}
+  .stage-header,.stage-footer {font-size:9px;}
+  .artboard-wrap {padding:2px 0;}
+}
+
   </style>
   <title>Wiggle Doodle</title>
 </head>
 <body>
   <div class="app">
     <header class="topbar">
-      <div class="brand"><span class="brand-symbol" aria-hidden="true">〰</span><span>wiggle<span class="brand-accent">doodle</span></span><span class="beta">v2.2</span></div>
+      <div class="brand"><span class="brand-symbol" aria-hidden="true">〰</span><span>wiggle<span class="brand-accent">doodle</span></span><span class="beta">v2.3</span></div>
       <div class="top-actions">
         <button id="undo" title="Undo" aria-label="Undo" class="icon-btn" disabled>↶ <span class="btn-word">Undo</span></button>
         <button id="redo" title="Redo" aria-label="Redo" class="icon-btn" disabled>↷ <span class="btn-word">Redo</span></button>
@@ -178,14 +324,14 @@ select { width:100%; padding: 11px; border:1px solid #e8ddd5; color:#403833; bac
         <div class="panel-section output-section">
           <h2>Canvas format</h2>
           <select id="format" aria-label="Canvas format">
-            <option value="portrait" selected>Portrait · 9:16 Reel</option>
+            <option value="portrait" selected>Reel · 9:16</option>
             <option value="square">Square · 1:1</option>
-            <option value="landscape">Landscape · 16:9</option>
+            <option value="landscape">Wide · 16:9</option>
           </select>
           <label class="export-label" for="quality">Video resolution</label>
           <select id="quality" aria-label="Export quality">
-            <option value="1080" selected>Full HD · 1080 × 1920</option>
-            <option value="720">Fast · 720 × 1280</option>
+            <option value="1080" selected>HD · 1080p</option>
+            <option value="720">Fast · 720p</option>
           </select>
           <button id="record" class="outline-btn" title="Export seamless looping MP4">▶ Export Instagram MP4 · 4s loop</button>
           <div id="exportProgress" class="progress" hidden><div id="progressFill"></div></div>
@@ -354,6 +500,28 @@ select { width:100%; padding: 11px; border:1px solid #e8ddd5; color:#403833; bac
   function applyFormat() {
     board.dataset.format=state.format;
     $('format').value=state.format;
+    fitArtboard();
+  }
+  // Fit by both available width AND height, so changing orientation or a
+  // 9:16 / square / 16:9 canvas never pushes controls off-screen.
+  function fitArtboard() {
+    const compact=matchMedia('(max-width:1199px), (pointer:coarse)').matches;
+    if(!compact){
+      board.style.width='';
+      board.style.height='';
+      board.style.maxHeight='';
+      resize();
+      return;
+    }
+    const wrap=$('artboardWrap'), css=getComputedStyle(wrap);
+    const maxWidth=wrap.clientWidth-parseFloat(css.paddingLeft)-parseFloat(css.paddingRight);
+    const maxHeight=wrap.clientHeight-parseFloat(css.paddingTop)-parseFloat(css.paddingBottom);
+    if(maxWidth<8||maxHeight<8)return;
+    const dims=formats[state.format]||formats.portrait, ratio=dims[0]/dims[1];
+    const fittedWidth=Math.max(1,Math.min(maxWidth,maxHeight*ratio));
+    board.style.width=fittedWidth+'px';
+    board.style.height=(fittedWidth/ratio)+'px';
+    board.style.maxHeight='none';
     resize();
   }
   function resize() {
@@ -795,7 +963,11 @@ select { width:100%; padding: 11px; border:1px solid #e8ddd5; color:#403833; bac
   $('intensity').value=String(state.intensity);
   $('intensityValue').textContent=`${state.intensity===0?'Still':state.intensity<31?'Gentle':state.intensity<65?'Medium':'Lively'} · ${state.intensity}%`;
   applyFormat();updateStatus();
-  if('ResizeObserver' in window)new ResizeObserver(resize).observe(board);else addEventListener('resize',resize);
+  if('ResizeObserver' in window) {
+    const observer=new ResizeObserver(()=>fitArtboard());
+    observer.observe($('artboardWrap'));
+  } else addEventListener('resize',fitArtboard);
+  addEventListener('orientationchange',()=>requestAnimationFrame(fitArtboard));
   requestAnimationFrame(animate);
   if('serviceWorker' in navigator && location.protocol.startsWith('http')){
     addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(e=>console.warn('Offline cache unavailable',e)));
