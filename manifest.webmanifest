@@ -1,0 +1,18 @@
+{
+  "name": "Wiggle Doodle – gentle animated art",
+  "short_name": "Wiggle Doodle",
+  "description": "Seven gentle animated brushes and Instagram-ready MP4 export.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#faf7f3",
+  "theme_color": "#faf7f3",
+  "icons": [
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
