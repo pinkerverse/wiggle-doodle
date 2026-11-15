@@ -113,7 +113,7 @@ select { width:100%; padding: 11px; border:1px solid #e8ddd5; color:#403833; bac
 <body>
   <div class="app">
     <header class="topbar">
-      <div class="brand"><span class="brand-symbol" aria-hidden="true">〰</span><span>wiggle<span class="brand-accent">doodle</span></span><span class="beta">v2</span></div>
+      <div class="brand"><span class="brand-symbol" aria-hidden="true">〰</span><span>wiggle<span class="brand-accent">doodle</span></span><span class="beta">v2.1</span></div>
       <div class="top-actions">
         <button id="undo" title="Undo" aria-label="Undo" class="icon-btn" disabled>↶ <span class="btn-word">Undo</span></button>
         <button id="redo" title="Redo" aria-label="Redo" class="icon-btn" disabled>↷ <span class="btn-word">Redo</span></button>
@@ -156,8 +156,8 @@ select { width:100%; padding: 11px; border:1px solid #e8ddd5; color:#403833; bac
         <div class="panel-section">
           <div class="section-head"><h2>Keep it moving</h2><label class="toggle"><input type="checkbox" id="motion" checked /><span class="switch"></span></label></div>
           <p class="helper">Lines stay steady while you draw; they only come alive when you lift your Pencil.</p>
-          <div class="section-head motion-heading"><label for="intensity">Wiggle strength</label><output id="intensityValue">Gentle · 18%</output></div>
-          <input id="intensity" type="range" min="0" max="100" step="1" value="18" aria-label="Wiggle strength" />
+          <div class="section-head motion-heading"><label for="intensity">Wiggle strength</label><output id="intensityValue">Medium · 38%</output></div>
+          <input id="intensity" type="range" min="0" max="100" step="1" value="38" aria-label="Wiggle strength" />
           <div class="size-labels"><span>Still</span><span>More lively</span></div>
         </div>
         <div class="panel-section output-section">
@@ -279,7 +279,7 @@ select { width:100%; padding: 11px; border:1px solid #e8ddd5; color:#403833; bac
   const LOOP=4, FPS=30, TWO_PI=Math.PI*2;
   const key='wiggle-doodle-drawing-v2';
   const oldKey='wiggle-doodle-drawing-v1';
-  const state={strokes:[],redo:[],brush:'wiggle',color:'#202027',size:8,motion:true,intensity:18,format:'portrait'};
+  const state={strokes:[],redo:[],brush:'wiggle',color:'#202027',size:8,motion:true,intensity:38,format:'portrait'};
   let activePointer=null,currentStroke=null,autosaveId=null,toastTimer=null;
   let exporting=false,exportedBlob=null,exportedUrl=null;
   let t0=performance.now();
@@ -303,7 +303,16 @@ select { width:100%; padding: 11px; border:1px solid #e8ddd5; color:#403833; bac
       state.strokes=saved.strokes.slice(-400).map(normalizeStroke).filter(Boolean);
       if(formats[saved.format])state.format=saved.format;
       if(typeof saved.motion==='boolean')state.motion=saved.motion;
-      if(Number.isFinite(saved.intensity))state.intensity=Math.max(0,Math.min(100,saved.intensity));
+      if(Number.isFinite(saved.intensity)){
+        state.intensity=Math.max(0,Math.min(100,saved.intensity));
+        // Upgrade the old, barely-visible 18% default only once.
+        // Leave any user-chosen intensity unchanged, including future 18% settings.
+        const migratedKey='wiggle-doodle-default-wiggle-v2-1';
+        if(!localStorage.getItem(migratedKey)){
+          localStorage.setItem(migratedKey,'1');
+          if(saved.intensity===18){state.intensity=38;persist();}
+        }
+      }
       if(fromOld && state.strokes.length) showToast('Your original drawing is here ✦');
     }catch(err){console.warn('Restore failed',err);}
   }
@@ -372,8 +381,8 @@ select { width:100%; padding: 11px; border:1px solid #e8ddd5; color:#403833; bac
 
   // All frequencies are integral multiples of one four-second period:
   // the animation at t=4.0 is identical to t=0.0, enabling a clean loop.
-  // Motion displaces points along their local normal, by <~20% of a line width
-  // at the gentle default. The raw path never moves under a drawing Pencil.
+  // Motion displaces points along their local normal; the new 38% default
+  // produces a visible but still small wobble. Drawing remains steady.
   function pointsFor(s,w,h,t,animated,intensity) {
     const original=s.points,pts=new Array(original.length);
     if(!animated||s.brush==='ink'||intensity===0){
